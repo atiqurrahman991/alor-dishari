@@ -20,7 +20,7 @@ enum Tr {
   addInstallment, paidAmount, lateFine, paymentDate, installmentHistory,
   // Common
   save, cancel, delete, edit, search, filter, refresh, loading, noData,
-  success, error, confirm, yes, no, date, amount, name, submit, back, next, close,
+  success, error, confirm, yes, no, date, amount, name, submit, back, next, close, notes,
   // Settings
   language, theme, darkMode, lightMode, switchLanguage, switchTheme, appVersion,
   // New UI Elements
@@ -104,6 +104,7 @@ const Map<Tr, Map<String, String>> _translations = {
   Tr.back:               {'en': 'Back',                'bn': 'পিছনে'},
   Tr.next:               {'en': 'Next',                'bn': 'পরবর্তী'},
   Tr.close:              {'en': 'Close',               'bn': 'বন্ধ করুন'},
+  Tr.notes:              {'en': 'Notes',               'bn': 'নোট'},
   Tr.language:           {'en': 'Language',            'bn': 'ভাষা'},
   Tr.theme:              {'en': 'Theme',               'bn': 'থিম'},
   Tr.darkMode:           {'en': 'Dark Mode',           'bn': 'ডার্ক মোড'},
