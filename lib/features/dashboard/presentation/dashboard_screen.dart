@@ -9,6 +9,7 @@ import '../providers/dashboard_provider.dart';
 import 'add_savings_dialog.dart';
 import 'add_installment_dialog.dart';
 import '../../members/presentation/members_screen.dart';
+import '../../members/presentation/ledger_screen.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -195,6 +196,25 @@ class DashboardScreen extends ConsumerWidget {
                         );
                       },
                     ),
+                    if (!isAdmin)
+                      ActionChip(
+                        label: Text(tr[Tr.viewLedger]),
+                        avatar: const Icon(Icons.analytics_rounded, size: 18),
+                        onPressed: () {
+                          final profile = ref.read(currentUserProfileProvider).value;
+                          if (profile != null) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => LedgerScreen(
+                                  memberId: profile['id'],
+                                  memberName: stats['name'],
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                      ),
                   ],
                 ),
                 if (isAdmin) ...[

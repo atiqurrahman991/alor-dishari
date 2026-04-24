@@ -6,6 +6,7 @@ import '../../../core/providers/translation_provider.dart';
 import '../../../core/providers/theme_provider.dart';
 import '../providers/members_provider.dart';
 import 'issue_loan_dialog.dart';
+import 'ledger_screen.dart';
 
 class MembersScreen extends ConsumerWidget {
   const MembersScreen({super.key});
@@ -117,8 +118,14 @@ class MembersScreen extends ConsumerWidget {
                         children: [
                           OutlinedButton.icon(
                             onPressed: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Profile details & ledger coming soon!')),
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => LedgerScreen(
+                                    memberId: member['id'],
+                                    memberName: member['name'] ?? 'Unknown',
+                                  ),
+                                ),
                               );
                             },
                             icon: const Icon(Icons.analytics_rounded, size: 18),
