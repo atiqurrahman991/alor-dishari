@@ -10,6 +10,7 @@ import 'add_savings_dialog.dart';
 import 'add_installment_dialog.dart';
 import '../../members/presentation/members_screen.dart';
 import '../../members/presentation/ledger_screen.dart';
+import '../../reports/presentation/reports_screen.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -267,6 +268,14 @@ class DashboardScreen extends ConsumerWidget {
             onTap: () {
               Navigator.pop(context); // close drawer
               Navigator.push(context, MaterialPageRoute(builder: (_) => const MembersScreen()));
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.analytics_rounded),
+            title: const Text('হিসাব-নিকাশ (Reports)'),
+            onTap: () {
+              Navigator.pop(context); // close drawer
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const ReportsScreen()));
             },
           ),
           ListTile(
