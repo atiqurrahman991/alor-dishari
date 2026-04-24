@@ -8,6 +8,7 @@ import '../../auth/providers/auth_provider.dart';
 import '../providers/dashboard_provider.dart';
 import 'add_savings_dialog.dart';
 import 'add_installment_dialog.dart';
+import 'withdraw_savings_dialog.dart';
 import '../../members/presentation/members_screen.dart';
 import '../../members/presentation/ledger_screen.dart';
 import '../../reports/presentation/reports_screen.dart';
@@ -197,6 +198,17 @@ class DashboardScreen extends ConsumerWidget {
                         );
                       },
                     ),
+                    if (!isAdmin)
+                      ActionChip(
+                        label: const Text('সঞ্চয় উত্তোলন'),
+                        avatar: const Icon(Icons.money_off_rounded, size: 18),
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (_) => const WithdrawSavingsDialog(),
+                          );
+                        },
+                      ),
                     if (!isAdmin)
                       ActionChip(
                         label: Text(tr[Tr.viewLedger]),

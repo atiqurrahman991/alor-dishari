@@ -150,6 +150,28 @@ class ActionService {
     ref.invalidate(pendingSavingsProvider);
   }
 
+  Future<void> requestWithdrawal({
+    required double amount,
+    String? method,
+    String? trxId,
+    String? notes,
+  }) async {
+    final profile = ref.read(currentUserProfileProvider).value;
+    if (profile == null) throw Exception('Profile not found');
+
+    await supabase.from('savings').insert({
+      'member_id': profile['id'],
+      'deposit_amount': -amount, // Negative amount for withdrawal
+      'payment_method': method,
+      'trx_id': trxId,
+      'notes': 'Withdrawal: ${notes ?? ""}',
+      'status': 'pending', 
+    });
+
+    ref.invalidate(dashboardStatsProvider);
+    ref.invalidate(pendingSavingsProvider);
+  }
+
   Future<void> approveSavings(String savingId) async {
     await supabase.from('savings').update({'status': 'approved'}).eq('id', savingId);
     
