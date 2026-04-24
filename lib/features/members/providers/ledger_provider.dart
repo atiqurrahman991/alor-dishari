@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../auth/providers/auth_provider.dart';
+import '../../../main.dart';
 
 // 1. Ledger Data Provider
 // Fetches both savings and installments for a specific member and merges them into a timeline

@@ -8,11 +8,18 @@ import '../providers/members_provider.dart';
 import 'issue_loan_dialog.dart';
 import 'ledger_screen.dart';
 
-class MembersScreen extends ConsumerWidget {
+class MembersScreen extends ConsumerStatefulWidget {
   const MembersScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MembersScreen> createState() => _MembersScreenState();
+}
+
+class _MembersScreenState extends ConsumerState<MembersScreen> {
+  String searchQuery = '';
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final tr = ref.watch(translationProvider);
     final membersAsync = ref.watch(membersListProvider);
@@ -39,21 +46,47 @@ class MembersScreen extends ConsumerWidget {
           child: Text('Error: $e', style: TextStyle(color: theme.colorScheme.error)),
         ),
         data: (members) {
-          if (members.isEmpty) {
-            return Center(
-              child: Text(
-                tr[Tr.noMembersFound],
-                style: theme.textTheme.titleMedium,
+          final filteredMembers = members.where((m) {
+            final name = (m['name'] ?? '').toString().toLowerCase();
+            final mobile = (m['mobile'] ?? '').toString().toLowerCase();
+            final nid = (m['nid'] ?? '').toString().toLowerCase();
+            final query = searchQuery.toLowerCase();
+            return name.contains(query) || mobile.contains(query) || nid.contains(query);
+          }).toList();
+
+          return Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: 'Search by name, mobile or NID...',
+                    prefixIcon: const Icon(Icons.search_rounded),
+                    filled: true,
+                    fillColor: isDark ? theme.colorScheme.surfaceContainerHighest : Colors.grey.shade100,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                  onChanged: (val) => setState(() => searchQuery = val),
+                ),
               ),
-            );
-          }
-          return RefreshIndicator(
-            onRefresh: () async => ref.invalidate(membersListProvider),
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: members.length,
-              itemBuilder: (context, index) {
-                final member = members[index];
+              Expanded(
+                child: filteredMembers.isEmpty
+                    ? Center(
+                        child: Text(
+                          tr[Tr.noMembersFound] ?? 'No members found',
+                          style: theme.textTheme.titleMedium,
+                        ),
+                      )
+                    : RefreshIndicator(
+                        onRefresh: () async => ref.invalidate(membersListProvider),
+                        child: ListView.builder(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          itemCount: filteredMembers.length,
+                          itemBuilder: (context, index) {
+                            final member = filteredMembers[index];
                 final role = member['role'];
                 final isAdmin = role == 'admin';
 
@@ -152,7 +185,10 @@ class MembersScreen extends ConsumerWidget {
                   ),
                 );
               },
-            ),
+            ), // closes ListView.builder
+                      ), // closes RefreshIndicator
+              ), // closes Expanded
+            ],
           );
         },
       ),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../../core/providers/translation_provider.dart';
-import 'ledger_provider.dart';
+import '../providers/ledger_provider.dart';
 
 class LedgerScreen extends ConsumerWidget {
   final String memberId;
