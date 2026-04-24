@@ -12,6 +12,7 @@ import 'withdraw_savings_dialog.dart';
 import '../../members/presentation/members_screen.dart';
 import '../../members/presentation/ledger_screen.dart';
 import '../../reports/presentation/reports_screen.dart';
+import '../../members/presentation/profile_screen.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -44,6 +45,13 @@ class DashboardScreen extends ConsumerWidget {
             icon: const Icon(Icons.logout_rounded),
             onPressed: () {
               ref.read(authProvider.notifier).logout();
+            },
+          ),
+          IconButton(
+            tooltip: 'আমার প্রোফাইল',
+            icon: const Icon(Icons.account_circle_rounded),
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfileScreen()));
             },
           ),
           const SizedBox(width: 8),
@@ -291,9 +299,18 @@ class DashboardScreen extends ConsumerWidget {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.savings_rounded),
-            title: Text(tr[Tr.savings]),
-            onTap: () {},
+            leading: const Icon(Icons.account_circle_rounded),
+            title: const Text('আমার প্রোফাইল'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfileScreen()));
+            },
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.logout_rounded),
+            title: Text(tr[Tr.logout]),
+            onTap: () => ref.read(authProvider.notifier).logout(),
           ),
         ],
       ),
