@@ -41,7 +41,7 @@ Future<void> main() async {
   await Supabase.initialize(
     url:     _supabaseUrl,
     anonKey: _supabaseAnonKey,
-    debug:   true, // false করুন production এ
+    debug:   false, // false করুন production এ
   );
 
   // Load persisted preferences

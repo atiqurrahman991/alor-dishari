@@ -12,8 +12,8 @@ import 'withdraw_savings_dialog.dart';
 import '../../members/presentation/members_screen.dart';
 import '../../members/presentation/ledger_screen.dart';
 import '../../reports/presentation/reports_screen.dart';
-import '../../reports/presentation/distribute_profit_dialog.dart';
 import '../../members/presentation/profile_screen.dart';
+import '../../profit/presentation/profit_screen.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -187,17 +187,6 @@ class DashboardScreen extends ConsumerWidget {
                         avatar: const Icon(Icons.person_add_alt_1_rounded, size: 18),
                         onPressed: () {},
                       ),
-                    if (isAdmin)
-                      ActionChip(
-                        label: Text(tr[Tr.distributeProfit]),
-                        avatar: const Icon(Icons.account_balance_rounded, size: 18),
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (_) => const DistributeProfitDialog(),
-                          );
-                        },
-                      ),
                     ActionChip(
                       label: Text(tr[Tr.addSavings]),
                       avatar: const Icon(Icons.monetization_on_rounded, size: 18),
@@ -220,7 +209,7 @@ class DashboardScreen extends ConsumerWidget {
                     ),
                     if (!isAdmin)
                       ActionChip(
-                        label: const Text('সঞ্চয় উত্তোলন'),
+                        label: const Text('সঞ্চয় উত্তোলন'),
                         avatar: const Icon(Icons.money_off_rounded, size: 18),
                         onPressed: () {
                           showDialog(
@@ -248,6 +237,17 @@ class DashboardScreen extends ConsumerWidget {
                           }
                         },
                       ),
+                    ActionChip(
+                      label: Text(tr[Tr.profitDistribution]),
+                      avatar: const Icon(Icons.workspace_premium_rounded, size: 18),
+                      backgroundColor: Colors.amber.withOpacity(0.1),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const ProfitScreen()),
+                        );
+                      },
+                    ),
                   ],
                 ),
                 if (isAdmin) ...[
@@ -308,6 +308,14 @@ class DashboardScreen extends ConsumerWidget {
             onTap: () {
               Navigator.pop(context); // close drawer
               Navigator.push(context, MaterialPageRoute(builder: (_) => const ReportsScreen()));
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.workspace_premium_rounded),
+            title: Text(tr[Tr.profitDistribution]),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfitScreen()));
             },
           ),
           ListTile(
@@ -392,237 +400,3 @@ class _DashboardCard extends StatelessWidget {
     );
   }
 }
-
-class _PendingApprovalsSection extends ConsumerWidget {
-  const _PendingApprovalsSection();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-    final tr = ref.watch(translationProvider);
-    final pendingAsync = ref.watch(pendingSavingsProvider);
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.errorContainer.withOpacity(0.3),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: theme.colorScheme.error.withOpacity(0.5)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.pending_actions_rounded, color: theme.colorScheme.error),
-              const SizedBox(width: 8),
-              Text(
-                tr[Tr.pendingApprovals],
-                style: theme.textTheme.titleMedium?.copyWith(
-                  color: theme.colorScheme.error,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-
-          // MEMBER APPROVALS (New section)
-          Text('New Member Requests', style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontWeight: FontWeight.bold)),
-          ref.watch(pendingMembersProvider).when(
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (e, st) => Text('${tr[Tr.errorLoading]}: $e', style: TextStyle(color: theme.colorScheme.error)),
-            data: (items) {
-              if (items.isEmpty) {
-                return Text(tr[Tr.noPending], style: theme.textTheme.bodyMedium);
-              }
-              return ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: items.length,
-                separatorBuilder: (_, __) => const Divider(),
-                itemBuilder: (context, index) {
-                  final item = items[index];
-                  return ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: CircleAvatar(
-                      backgroundColor: theme.colorScheme.tertiary.withOpacity(0.1),
-                      child: Icon(Icons.person_add, color: theme.colorScheme.tertiary),
-                    ),
-                    title: Text(item['name'], style: const TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: Text('Mobile: ${item['mobile']} (${item['category']})'),
-                    trailing: ElevatedButton.icon(
-                      onPressed: () async {
-                        try {
-                          await ref.read(actionProvider).approveMember(item['id']);
-                          if (!context.mounted) return;
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Member Approved!'), backgroundColor: Colors.green),
-                          );
-                        } catch (e) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Error approving member'), backgroundColor: Colors.red),
-                          );
-                        }
-                      },
-                      icon: const Icon(Icons.check_circle_outline_rounded, size: 18),
-                      label: Text(ref.watch(translationProvider)[Tr.approve]),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green.shade600,
-                        foregroundColor: Colors.white,
-                      ),
-                    ),
-                  );
-                },
-              );
-            },
-          ),
-          
-          const SizedBox(height: 24),
-          // SAVINGS
-          Text('Savings Requests', style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontWeight: FontWeight.bold)),
-          pendingAsync.when(
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (e, st) => Text('${tr[Tr.errorLoading]}: $e', style: TextStyle(color: theme.colorScheme.error)),
-            data: (items) {
-              if (items.isEmpty) {
-                return Text(
-                  tr[Tr.noPending],
-                  style: theme.textTheme.bodyMedium,
-                );
-              }
-              return ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: items.length,
-                separatorBuilder: (_, __) => const Divider(),
-                itemBuilder: (context, index) {
-                  final item = items[index];
-                  final memberName = item['members']?['name'] ?? 'Unknown Member';
-                  final amount = item['deposit_amount'];
-                  final id = item['id'];
-
-                  return ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: CircleAvatar(
-                      backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
-                      child: const Icon(Icons.person),
-                    ),
-                    title: Text(memberName, style: const TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: Text(amount < 0 
-                      ? 'Withdrawal request of ৳ ${amount.abs()}' 
-                      : 'Added savings of ৳ $amount'),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.cancel_outlined, color: Colors.red),
-                          onPressed: () => ref.read(actionProvider).rejectSavings(id),
-                          tooltip: 'Reject',
-                        ),
-                        ElevatedButton.icon(
-                          onPressed: () async {
-                            try {
-                              await ref.read(actionProvider).approveSavings(id);
-                              if (!context.mounted) return;
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Approved!'), backgroundColor: Colors.green),
-                              );
-                            } catch (e) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Error approving'), backgroundColor: Colors.red),
-                              );
-                            }
-                          },
-                          icon: const Icon(Icons.check_circle_outline_rounded, size: 18),
-                          label: Text(ref.watch(translationProvider)[Tr.approve]),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green.shade600,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(horizontal: 12),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              );
-            },
-          ),
-          
-          const SizedBox(height: 24),
-          // INSTALLMENTS
-          Text('Installment Requests', style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontWeight: FontWeight.bold)),
-          ref.watch(pendingInstallmentsProvider).when(
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (e, st) => Text('${tr[Tr.errorLoading]}: $e', style: TextStyle(color: theme.colorScheme.error)),
-            data: (items) {
-              if (items.isEmpty) {
-                return Text(
-                  tr[Tr.noPending],
-                  style: theme.textTheme.bodyMedium,
-                );
-              }
-              return ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: items.length,
-                separatorBuilder: (_, __) => const Divider(),
-                itemBuilder: (context, index) {
-                  final item = items[index];
-                  final memberName = item['loans']?['members']?['name'] ?? 'Unknown Member';
-                  final amount = item['paid_amount'];
-                  final id = item['id'];
-
-                  return ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: CircleAvatar(
-                      backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
-                      child: const Icon(Icons.person),
-                    ),
-                    title: Text(memberName, style: const TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: Text('Paid installment of ৳ $amount'),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.cancel_outlined, color: Colors.red),
-                          onPressed: () => ref.read(actionProvider).rejectInstallment(id),
-                          tooltip: 'Reject',
-                        ),
-                        ElevatedButton.icon(
-                          onPressed: () async {
-                            try {
-                              await ref.read(actionProvider).approveInstallment(id);
-                              if (!context.mounted) return;
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Approved!'), backgroundColor: Colors.green),
-                              );
-                            } catch (e) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Error approving'), backgroundColor: Colors.red),
-                              );
-                            }
-                          },
-                          icon: const Icon(Icons.check_circle_outline_rounded, size: 18),
-                          label: Text(ref.watch(translationProvider)[Tr.approve]),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green.shade600,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(horizontal: 12),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-}
-

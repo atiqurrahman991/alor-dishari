@@ -179,6 +179,13 @@ class ActionService {
     ref.invalidate(pendingSavingsProvider);
   }
 
+  Future<void> rejectSavings(String savingId) async {
+    await supabase.from('savings').update({'status': 'rejected'}).eq('id', savingId);
+    
+    ref.invalidate(dashboardStatsProvider);
+    ref.invalidate(pendingSavingsProvider);
+  }
+
   Future<void> submitInstallment({
     required double amount, 
     required String month, 
@@ -210,6 +217,13 @@ class ActionService {
 
   Future<void> approveInstallment(String instId) async {
     await supabase.from('installments').update({'status': 'approved'}).eq('id', instId);
+    
+    ref.invalidate(dashboardStatsProvider);
+    ref.invalidate(pendingInstallmentsProvider);
+  }
+
+  Future<void> rejectInstallment(String instId) async {
+    await supabase.from('installments').update({'status': 'rejected'}).eq('id', instId);
     
     ref.invalidate(dashboardStatsProvider);
     ref.invalidate(pendingInstallmentsProvider);
