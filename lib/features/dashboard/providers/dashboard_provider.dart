@@ -41,6 +41,10 @@ final dashboardStatsProvider = FutureProvider<Map<String, dynamic>>((ref) async 
     final savingsData = await supabase.from('savings').select('deposit_amount').eq('status', 'approved');
     double totalSavings = savingsData.fold(0.0, (sum, item) => sum + ((item['deposit_amount'] as num).toDouble()));
 
+    // Total Profit Distributed
+    final profitData = await supabase.from('member_profit_shares').select('share_amount');
+    double totalProfit = profitData.fold(0.0, (sum, item) => sum + ((item['share_amount'] as num).toDouble()));
+
     // Active Loans & Outstanding
     final loansData = await supabase.from('loans').select('outstanding_amount').eq('status', 'active');
     double totalOutstanding = loansData.fold(0.0, (sum, item) => sum + ((item['outstanding_amount'] as num).toDouble()));
@@ -49,7 +53,9 @@ final dashboardStatsProvider = FutureProvider<Map<String, dynamic>>((ref) async 
     return {
       'isAdmin': true,
       'total_members': membersCount,
-      'total_savings': totalSavings,
+      'total_savings': totalSavings + totalProfit,
+      'total_pure_savings': totalSavings,
+      'total_profit_distributed': totalProfit,
       'total_outstanding': totalOutstanding,
       'active_loans': activeLoansCount,
     };
@@ -61,6 +67,10 @@ final dashboardStatsProvider = FutureProvider<Map<String, dynamic>>((ref) async 
     final savingsData = await supabase.from('savings').select('deposit_amount').eq('status', 'approved').eq('member_id', memberId);
     double totalSavings = savingsData.fold(0.0, (sum, item) => sum + ((item['deposit_amount'] as num).toDouble()));
 
+    // Own Profit
+    final profitData = await supabase.from('member_profit_shares').select('share_amount').eq('member_id', memberId);
+    double ownProfit = profitData.fold(0.0, (sum, item) => sum + ((item['share_amount'] as num).toDouble()));
+
     // Own Outstanding Loans
     final loansData = await supabase.from('loans').select('outstanding_amount').eq('status', 'active').eq('member_id', memberId);
     double totalOutstanding = loansData.fold(0.0, (sum, item) => sum + ((item['outstanding_amount'] as num).toDouble()));
@@ -70,7 +80,9 @@ final dashboardStatsProvider = FutureProvider<Map<String, dynamic>>((ref) async 
       'isAdmin': false,
       'isPending': profile['status'] == 'pending',
       'name': profile['name'],
-      'total_savings': totalSavings,
+      'total_savings': totalSavings + ownProfit,
+      'pure_savings': totalSavings,
+      'total_profit': ownProfit,
       'total_outstanding': totalOutstanding,
       'active_loans': activeLoansCount,
     };
@@ -117,6 +129,27 @@ final pendingMembersProvider = FutureProvider<List<Map<String, dynamic>>>((ref) 
       .order('created_at', ascending: false);
       
   return List<Map<String, dynamic>>.from(data);
+});
+
+// 3.9. Pending Counts Provider (Admin Only)
+final pendingCountsProvider = FutureProvider<Map<String, int>>((ref) async {
+  final profile = await ref.watch(currentUserProfileProvider.future);
+  if (profile == null || profile['role'] != 'admin') return {'members': 0, 'savings': 0, 'installments': 0, 'total': 0};
+
+  final members = await supabase.from('members').select('id').eq('status', 'pending');
+  final savings = await supabase.from('savings').select('id').eq('status', 'pending');
+  final installments = await supabase.from('installments').select('id').eq('status', 'pending');
+
+  int mCount = members.length;
+  int sCount = savings.length;
+  int iCount = installments.length;
+
+  return {
+    'members': mCount,
+    'savings': sCount,
+    'installments': iCount,
+    'total': mCount + sCount + iCount,
+  };
 });
 
 // 4. Action Notifier (Submit & Approve)
@@ -177,6 +210,7 @@ class ActionService {
     
     ref.invalidate(dashboardStatsProvider);
     ref.invalidate(pendingSavingsProvider);
+    ref.invalidate(pendingCountsProvider);
   }
 
   Future<void> rejectSavings(String savingId) async {
@@ -184,6 +218,7 @@ class ActionService {
     
     ref.invalidate(dashboardStatsProvider);
     ref.invalidate(pendingSavingsProvider);
+    ref.invalidate(pendingCountsProvider);
   }
 
   Future<void> submitInstallment({
@@ -213,6 +248,7 @@ class ActionService {
 
     ref.invalidate(dashboardStatsProvider);
     ref.invalidate(pendingInstallmentsProvider);
+    ref.invalidate(pendingCountsProvider);
   }
 
   Future<void> approveInstallment(String instId) async {
@@ -220,6 +256,7 @@ class ActionService {
     
     ref.invalidate(dashboardStatsProvider);
     ref.invalidate(pendingInstallmentsProvider);
+    ref.invalidate(pendingCountsProvider);
   }
 
   Future<void> rejectInstallment(String instId) async {
@@ -227,6 +264,7 @@ class ActionService {
     
     ref.invalidate(dashboardStatsProvider);
     ref.invalidate(pendingInstallmentsProvider);
+    ref.invalidate(pendingCountsProvider);
   }
 
   Future<void> approveMember(String memberId) async {
@@ -234,6 +272,7 @@ class ActionService {
     
     ref.invalidate(dashboardStatsProvider);
     ref.invalidate(pendingMembersProvider);
+    ref.invalidate(pendingCountsProvider);
     // optionally invalidate member list if we had one here
   }
 }

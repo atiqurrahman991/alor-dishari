@@ -50,7 +50,16 @@ class DashboardScreen extends ConsumerWidget {
           ),
           IconButton(
             tooltip: 'আমার প্রোফাইল',
-            icon: const Icon(Icons.account_circle_rounded),
+            icon: ref.watch(pendingCountsProvider).when(
+              data: (counts) => counts['total']! > 0 
+                ? Badge(
+                    label: Text('${counts['total']}'),
+                    child: const Icon(Icons.account_circle_rounded),
+                  )
+                : const Icon(Icons.account_circle_rounded),
+              loading: () => const Icon(Icons.account_circle_rounded),
+              error: (_, __) => const Icon(Icons.account_circle_rounded),
+            ),
             onPressed: () {
               Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfileScreen()));
             },
