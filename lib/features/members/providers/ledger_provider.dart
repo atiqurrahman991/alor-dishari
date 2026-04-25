@@ -15,8 +15,8 @@ final ledgerProvider = FutureProvider.family<List<Map<String, dynamic>>, String>
   // Fetch active/paid installments
   final installmentsResponse = await supabase
       .from('installments')
-      .select('id, paid_amount, month, payment_method, trx_id, created_at, notes, loans(id)')
-      .eq('member_id', memberId)
+      .select('id, paid_amount, month, payment_method, trx_id, created_at, notes, loans!inner(id, member_id)')
+      .eq('loans.member_id', memberId)
       .eq('status', 'approved')
       .order('created_at', ascending: false);
 
