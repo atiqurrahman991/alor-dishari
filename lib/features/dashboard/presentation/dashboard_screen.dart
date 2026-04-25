@@ -158,7 +158,7 @@ class DashboardScreen extends ConsumerWidget {
                             color: Colors.blueAccent,
                           ),
                         _DashboardCard(
-                          title: tr[Tr.totalSavings], 
+                          title: tr[Tr.totalInvestment], 
                           value: '৳ ${stats['total_savings']}', 
                           icon: Icons.savings_rounded,
                           color: Colors.teal,
@@ -170,7 +170,7 @@ class DashboardScreen extends ConsumerWidget {
                           color: Colors.orangeAccent,
                         ),
                         _DashboardCard(
-                          title: tr[Tr.activeLoans], 
+                          title: tr[Tr.activeInvestments], 
                           value: '${stats['active_loans']}', 
                           icon: Icons.credit_score_rounded,
                           color: Colors.purpleAccent,
@@ -218,7 +218,7 @@ class DashboardScreen extends ConsumerWidget {
                       },
                     ),
                     ActionChip(
-                      label: Text(tr[Tr.addInstallment]),
+                      label: Text(tr[Tr.addReturn]),
                       avatar: const Icon(Icons.receipt_long_rounded, size: 18),
                       onPressed: () {
                         showDialog(
@@ -438,7 +438,7 @@ class _PendingApprovalsSection extends ConsumerWidget {
           const SizedBox(height: 16),
 
           // MEMBER APPROVALS (New section)
-          Text('New Member Requests', style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontWeight: FontWeight.bold)),
+          Text('নতুন মেম্বার রিকোয়েস্ট', style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontWeight: FontWeight.bold)),
           ref.watch(pendingMembersProvider).when(
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (e, st) => Text('${tr[Tr.errorLoading]}: $e', style: TextStyle(color: theme.colorScheme.error)),
@@ -490,7 +490,7 @@ class _PendingApprovalsSection extends ConsumerWidget {
           
           const SizedBox(height: 24),
           // SAVINGS
-          Text('Savings Requests', style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontWeight: FontWeight.bold)),
+          Text('পুঁজি জমার রিকোয়েস্ট', style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontWeight: FontWeight.bold)),
           pendingAsync.when(
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (e, st) => Text('${tr[Tr.errorLoading]}: $e', style: TextStyle(color: theme.colorScheme.error)),
@@ -520,8 +520,8 @@ class _PendingApprovalsSection extends ConsumerWidget {
                     ),
                     title: Text(memberName, style: const TextStyle(fontWeight: FontWeight.bold)),
                     subtitle: Text(amount < 0 
-                      ? 'Withdrawal request of ৳ ${amount.abs()}' 
-                      : 'Added savings of ৳ $amount'),
+                      ? '৳ ${amount.abs()} উত্তোলনের আবেদন' 
+                      : '৳ $amount পুঁজি জমার আবেদন'),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -562,7 +562,7 @@ class _PendingApprovalsSection extends ConsumerWidget {
           
           const SizedBox(height: 24),
           // INSTALLMENTS
-          Text('Installment Requests', style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontWeight: FontWeight.bold)),
+          Text('বিনিয়োগ ফেরতের আবেদন', style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontWeight: FontWeight.bold)),
           ref.watch(pendingInstallmentsProvider).when(
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (e, st) => Text('${tr[Tr.errorLoading]}: $e', style: TextStyle(color: theme.colorScheme.error)),
@@ -591,7 +591,7 @@ class _PendingApprovalsSection extends ConsumerWidget {
                       child: const Icon(Icons.person),
                     ),
                     title: Text(memberName, style: const TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: Text('Paid installment of ৳ $amount'),
+                    subtitle: Text('৳ $amount বিনিয়োগ ফেরত (কিস্তি)'),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [

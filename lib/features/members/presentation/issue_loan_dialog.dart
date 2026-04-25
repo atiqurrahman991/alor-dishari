@@ -46,7 +46,7 @@ class _IssueLoanDialogState extends ConsumerState<IssueLoanDialog> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${ref.read(translationProvider)[Tr.loanIssuedSuccess]} ${widget.member['name']}'),
+          content: Text('${ref.read(translationProvider)[Tr.investmentIssuedSuccess]} ${widget.member['name']}'),
           backgroundColor: Colors.green,
           behavior: SnackBarBehavior.floating,
         ),
@@ -77,7 +77,7 @@ class _IssueLoanDialogState extends ConsumerState<IssueLoanDialog> {
         children: [
           Icon(Icons.credit_score_rounded, color: theme.colorScheme.primary),
           const SizedBox(width: 8),
-          Text(tr[Tr.addLoan]),
+          Text(tr[Tr.addInvestment]),
         ],
       ),
       content: Form(
@@ -95,7 +95,7 @@ class _IssueLoanDialogState extends ConsumerState<IssueLoanDialog> {
               controller: _amountController,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
-                labelText: tr[Tr.totalLoanAmount],
+                labelText: tr[Tr.totalInvestmentAmount],
                 prefixIcon: const Icon(Icons.account_balance_rounded),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               ),
@@ -111,7 +111,7 @@ class _IssueLoanDialogState extends ConsumerState<IssueLoanDialog> {
               controller: _installmentController,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
-                labelText: tr[Tr.installmentAmount],
+                labelText: tr[Tr.returnAmount],
                 prefixIcon: const Icon(Icons.receipt_long_rounded),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               ),

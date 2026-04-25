@@ -83,7 +83,7 @@ class _AddInstallmentDialogState extends ConsumerState<AddInstallmentDialog> {
         children: [
           Icon(Icons.receipt_long_rounded, color: theme.colorScheme.primary),
           const SizedBox(width: 8),
-          Text(tr[Tr.addInstallment]),
+          Text(tr[Tr.addReturn]),
         ],
       ),
       content: Form(
@@ -92,7 +92,7 @@ class _AddInstallmentDialogState extends ConsumerState<AddInstallmentDialog> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'কিস্তি পরিশোধের পরিমাণ লিখুন। অ্যাডমিন কর্তৃক অনুমোদিত হলে তা আপনার ঋণ থেকে বিয়োগ করা হবে।',
+              'বিনিয়োগ ফেরতের পরিমাণ লিখুন। অ্যাডমিন কর্তৃক অনুমোদিত হলে তা আপনার বিনিয়োগ থেকে বিয়োগ করা হবে।',
               style: theme.textTheme.bodyMedium,
             ),
             const SizedBox(height: 16),

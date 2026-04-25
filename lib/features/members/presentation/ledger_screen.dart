@@ -79,7 +79,7 @@ class LedgerScreen extends ConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              isSavings ? 'সঞ্চয় জমা' : 'কিস্তি জমা',
+                              isSavings ? 'সঞ্চয় জমা' : 'বিনিয়োগ ফেরত',
                               style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 4),

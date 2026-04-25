@@ -33,7 +33,7 @@ class ReportsScreen extends ConsumerWidget {
                 _SectionTitle(title: 'আজকের কালেকশন', icon: Icons.today_rounded, color: Colors.blue),
                 const SizedBox(height: 16),
                 _ReportRow(label: 'আজকের সঞ্চয় জমা:', amount: stats['today_savings'], color: Colors.teal),
-                _ReportRow(label: 'আজকের কিস্তি জমা:', amount: stats['today_installment'], color: Colors.purple),
+                _ReportRow(label: 'আজকের বিনিয়োগ ফেরত:', amount: stats['today_installment'], color: Colors.purple),
                 const Divider(height: 32),
                 _ReportRow(label: 'সর্বমোট আজকের কালেকশন:', amount: stats['today_total'], color: Colors.blue, isBold: true),
                 
@@ -42,7 +42,7 @@ class ReportsScreen extends ConsumerWidget {
                 _SectionTitle(title: 'চলতি মাসের কালেকশন (${stats['month_name']})', icon: Icons.calendar_month_rounded, color: Colors.orange),
                 const SizedBox(height: 16),
                 _ReportRow(label: 'মাসিক সঞ্চয় জমা:', amount: stats['month_savings'], color: Colors.teal),
-                _ReportRow(label: 'মাসিক কিস্তি জমা:', amount: stats['month_installment'], color: Colors.purple),
+                _ReportRow(label: 'মাসিক বিনিয়োগ ফেরত:', amount: stats['month_installment'], color: Colors.purple),
                 const Divider(height: 32),
                 _ReportRow(label: 'সর্বমোট মাসিক কালেকশন:', amount: stats['month_total'], color: Colors.orange, isBold: true),
               ],

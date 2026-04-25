@@ -177,7 +177,7 @@ class _MembersScreenState extends ConsumerState<MembersScreen> {
                               foregroundColor: theme.colorScheme.onPrimary,
                             ),
                             icon: const Icon(Icons.credit_score_rounded, size: 18),
-                            label: Text(tr[Tr.addLoan]),
+                            label: Text(tr[Tr.addInvestment]),
                           ),
                         ],
                       ),
