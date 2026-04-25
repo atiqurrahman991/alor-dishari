@@ -13,6 +13,7 @@ import '../providers/notices_provider.dart';
 import '../../members/presentation/members_screen.dart';
 import '../../members/presentation/ledger_screen.dart';
 import '../../reports/presentation/reports_screen.dart';
+import '../../settings/presentation/privacy_policy_screen.dart';
 import '../../reports/presentation/distribute_profit_dialog.dart';
 import '../../members/presentation/profile_screen.dart';
 
