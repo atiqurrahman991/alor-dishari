@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/reports_provider.dart';
+import 'external_investments_screen.dart';
 
 class ReportsScreen extends ConsumerWidget {
   const ReportsScreen({super.key});
@@ -49,6 +50,9 @@ class ReportsScreen extends ConsumerWidget {
                 _ReportRow(label: 'মাসিক বিনিয়োগ ফেরত:', amount: stats['month_installment'], color: Colors.purple),
                 const Divider(height: 32),
                 _ReportRow(label: 'সর্বমোট মাসিক কালেকশন:', amount: stats['month_total'], color: Colors.orange, isBold: true),
+
+                const SizedBox(height: 32),
+                _buildExternalInvestmentLink(context, theme),
 
                 const SizedBox(height: 48),
                 _buildCollectionAnalysis(context, ref, collectionAsync, theme),
@@ -217,3 +221,24 @@ class _AnalysisRow extends StatelessWidget {
     );
   }
 }
+
+Widget _buildExternalInvestmentLink(BuildContext context, ThemeData theme) {
+  return Card(
+    elevation: 0,
+    color: theme.colorScheme.secondaryContainer.withOpacity(0.3),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(16),
+      side: BorderSide(color: theme.colorScheme.secondary.withOpacity(0.2)),
+    ),
+    child: ListTile(
+      leading: Icon(Icons.business_center_rounded, color: theme.colorScheme.secondary),
+      title: const Text('বাহ্যিক বিনিয়োগ ব্যবস্থাপনা', style: TextStyle(fontWeight: FontWeight.bold)),
+      subtitle: const Text('জমি ক্রয় বা অন্যান্য ইনভেস্টমেন্ট রেকর্ড করুন'),
+      trailing: const Icon(Icons.chevron_right_rounded),
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => const ExternalInvestmentsScreen()));
+      },
+    ),
+  );
+}
+

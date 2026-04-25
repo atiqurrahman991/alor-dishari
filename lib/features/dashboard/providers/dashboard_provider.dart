@@ -50,6 +50,10 @@ final dashboardStatsProvider = FutureProvider<Map<String, dynamic>>((ref) async 
     double totalOutstanding = loansData.fold(0.0, (sum, item) => sum + ((item['outstanding_amount'] as num).toDouble()));
     int activeLoansCount = loansData.length;
 
+    // External Investments
+    final externalData = await supabase.from('external_investments').select('amount').eq('status', 'active');
+    double totalExternal = externalData.fold(0.0, (sum, item) => sum + ((item['amount'] as num).toDouble()));
+
     // Target Progress (Samity Overall)
     const double monthlyTarget = 500.0;
     const int totalMonths = 60; // 5 years
@@ -68,6 +72,7 @@ final dashboardStatsProvider = FutureProvider<Map<String, dynamic>>((ref) async 
       'total_profit_distributed': totalProfit,
       'total_outstanding': totalOutstanding,
       'active_loans': activeLoansCount,
+      'total_external_investments': totalExternal,
       'target_progress': (totalSavings / overallTarget).clamp(0.0, 1.0),
       'time_progress': timeProgress,
       'total_target': overallTarget,

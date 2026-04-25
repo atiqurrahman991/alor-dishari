@@ -141,7 +141,7 @@ class DashboardScreen extends ConsumerWidget {
                 // Grid of Stats
                 LayoutBuilder(
                   builder: (context, constraints) {
-                    int crossAxisCount = constraints.maxWidth > 800 ? 4 : (constraints.maxWidth > 500 ? 2 : 1);
+                    int crossAxisCount = constraints.maxWidth > 800 ? (isAdmin ? 5 : 4) : (constraints.maxWidth > 500 ? 2 : 1);
                     return GridView.count(
                       crossAxisCount: crossAxisCount,
                       shrinkWrap: true,
@@ -175,6 +175,13 @@ class DashboardScreen extends ConsumerWidget {
                           icon: Icons.credit_score_rounded,
                           color: Colors.purpleAccent,
                         ),
+                        if (isAdmin)
+                          _DashboardCard(
+                            title: 'বাহ্যিক বিনিয়োগ', 
+                            value: '৳ ${stats['total_external_investments']}', 
+                            icon: Icons.business_center_rounded,
+                            color: Colors.brown,
+                          ),
                       ],
                     );
                   }
