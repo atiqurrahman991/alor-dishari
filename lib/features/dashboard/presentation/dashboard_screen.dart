@@ -9,6 +9,7 @@ import '../providers/dashboard_provider.dart';
 import 'add_savings_dialog.dart';
 import 'add_installment_dialog.dart';
 import 'withdraw_savings_dialog.dart';
+import '../providers/notices_provider.dart';
 import '../../members/presentation/members_screen.dart';
 import '../../members/presentation/ledger_screen.dart';
 import '../../reports/presentation/reports_screen.dart';
@@ -188,6 +189,9 @@ class DashboardScreen extends ConsumerWidget {
                 ),
 
                 const SizedBox(height: 24),
+                _NoticeBoardSection(),
+
+                const SizedBox(height: 24),
                 _TargetProgressCard(stats: stats),
                 
                 const SizedBox(height: 40),
@@ -205,6 +209,12 @@ class DashboardScreen extends ConsumerWidget {
                         label: Text(tr[Tr.addMember]),
                         avatar: const Icon(Icons.person_add_alt_1_rounded, size: 18),
                         onPressed: () {},
+                      ),
+                    if (isAdmin)
+                      ActionChip(
+                        label: const Text('নতুন নোটিশ'),
+                        avatar: const Icon(Icons.campaign_rounded, size: 18),
+                        onPressed: () => _showAddNoticeDialog(context, ref),
                       ),
                     if (isAdmin)
                       ActionChip(
@@ -743,3 +753,155 @@ class _TargetProgressCard extends StatelessWidget {
     );
   }
 }
+
+class _NoticeBoardSection extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final noticesAsync = ref.watch(noticesProvider);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(Icons.campaign_rounded, color: theme.colorScheme.primary),
+            const SizedBox(width: 8),
+            Text(
+              'নোটিশ বোর্ড',
+              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        noticesAsync.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (e, st) => Text('Error loading notices: $e'),
+          data: (notices) {
+            if (notices.isEmpty) {
+              return Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Text('এখনো কোনো নতুন ঘোষণা নেই।', textAlign: TextAlign.center),
+              );
+            }
+
+            return SizedBox(
+              height: 120,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: notices.length,
+                itemBuilder: (context, index) {
+                  final notice = notices[index];
+                  final isHigh = notice['priority'] == 'high';
+
+                  return Container(
+                    width: 280,
+                    margin: const EdgeInsets.only(right: 12),
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: isHigh 
+                        ? Colors.orange.shade50 
+                        : theme.colorScheme.primaryContainer.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: isHigh ? Colors.orange.shade200 : theme.colorScheme.primary.withOpacity(0.2),
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            if (isHigh) const Icon(Icons.priority_high_rounded, size: 16, color: Colors.orange),
+                            Expanded(
+                              child: Text(
+                                notice['title'],
+                                style: const TextStyle(fontWeight: FontWeight.bold),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Expanded(
+                          child: Text(
+                            notice['content'],
+                            style: theme.textTheme.bodySmall,
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+}
+
+void _showAddNoticeDialog(BuildContext context, WidgetRef ref) {
+  final titleController = TextEditingController();
+  final contentController = TextEditingController();
+  String priority = 'normal';
+
+  showDialog(
+    context: context,
+    builder: (context) => StatefulBuilder(
+      builder: (context, setState) => AlertDialog(
+        title: const Text('নতুন ঘোষণা দিন'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: titleController,
+              decoration: const InputDecoration(labelText: 'শিরোনাম'),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: contentController,
+              decoration: const InputDecoration(labelText: 'বিস্তারিত'),
+              maxLines: 3,
+            ),
+            const SizedBox(height: 12),
+            DropdownButtonFormField<String>(
+              value: priority,
+              decoration: const InputDecoration(labelText: 'গুরুত্ব'),
+              items: const [
+                DropdownMenuItem(value: 'normal', child: Text('সাধারণ')),
+                DropdownMenuItem(value: 'high', child: Text('জরুরী')),
+              ],
+              onChanged: (val) => setState(() => priority = val!),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('বাতিল')),
+          ElevatedButton(
+            onPressed: () async {
+              if (titleController.text.isEmpty || contentController.text.isEmpty) return;
+              await ref.read(noticeActionProvider).addNotice(
+                title: titleController.text.trim(),
+                content: contentController.text.trim(),
+                priority: priority,
+              );
+              if (context.mounted) Navigator.pop(context);
+            },
+            child: const Text('প্রকাশ করুন'),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
