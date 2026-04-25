@@ -58,7 +58,7 @@ class DashboardScreen extends ConsumerWidget {
           const SizedBox(width: 8),
         ],
       ),
-      drawer: _buildDrawer(context, tr, theme),
+      drawer: _buildDrawer(context, tr, theme, ref),
       body: statsAsyncValue.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, stack) => Center(
@@ -262,7 +262,7 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildDrawer(BuildContext context, TranslationService tr, ThemeData theme) {
+  Widget _buildDrawer(BuildContext context, TranslationService tr, ThemeData theme, WidgetRef ref) {
     return Drawer(
       backgroundColor: theme.scaffoldBackgroundColor,
       child: ListView(
