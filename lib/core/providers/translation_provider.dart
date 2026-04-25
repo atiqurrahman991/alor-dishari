@@ -9,6 +9,7 @@ enum Tr {
   dashboard, members, savings, loans, installments, reports, settings,
   // Dashboard
   totalMembers, totalSavings, totalInvestment, totalOutstanding, activeInvestments, monthlyCollection,
+  totalLoan, activeLoans, // Restoring for compatibility
   // Members
   addMember, editMember, deleteMember, memberName, mobileNumber, nidNumber,
   category, address, nomineeName, memberDetails, memberList,
@@ -16,8 +17,10 @@ enum Tr {
   addSavings, depositAmount, depositDate, savingsHistory, totalDeposits,
   // Loans
   addInvestment, totalInvestmentAmount, outstandingAmount, returnAmount, investmentStatus, active, closed,
+  addLoan, loanIssuedSuccess, investmentIssuedSuccess, // Adding missing and restoring
   // Installments
   addReturn, paidAmount, lateFine, paymentDate, returnHistory,
+  addInstallment, // Restoring
   // Common
   save, cancel, delete, edit, search, filter, refresh, loading, noData,
   success, error, confirm, yes, no, date, amount, name, submit, back, next, close, notes,
@@ -26,7 +29,7 @@ enum Tr {
   // New UI Elements
   hello, administrator, quickActions, pendingApprovals, noPending, approve, 
   joined, viewLedger, issuingLoanFor, noMembersFound, depositRequested, 
-  loanIssuedSuccess, errorLoading,
+  errorLoading,
   // Profit Distribution
   distributeProfit, profitShare, totalProfitAmount, periodName, eligibleSavings,
 }
@@ -126,6 +129,11 @@ const Map<Tr, Map<String, String>> _translations = {
   Tr.noMembersFound:     {'en': 'No members found.',   'bn': 'কোনো সদস্য পাওয়া যায়নি।'},
   Tr.depositRequested:   {'en': 'Deposit requested! Waiting for admin.', 'bn': 'জমার রিকোয়েস্ট পাঠানো হয়েছে! অ্যাডমিনের অনুমোদনের অপেক্ষায়।'},
   Tr.investmentIssuedSuccess: {'en': 'Successfully issued investment', 'bn': 'সফলভাবে বিনিয়োগ প্রদান করা হয়েছে'},
+  Tr.loanIssuedSuccess:  {'en': 'Successfully issued investment', 'bn': 'সফলভাবে বিনিয়োগ প্রদান করা হয়েছে'},
+  Tr.totalLoan:          {'en': 'Total Investment',    'bn': 'মোট বিনিয়োগ'},
+  Tr.activeLoans:        {'en': 'Active Investments',  'bn': 'সক্রিয় বিনিয়োগ'},
+  Tr.addLoan:            {'en': 'Add Investment',      'bn': 'বিনিয়োগ করুন'},
+  Tr.addInstallment:     {'en': 'Add Return',          'bn': 'কিস্তি জমা'},
   Tr.errorLoading:       {'en': 'Error loading',       'bn': 'লোড করতে ত্রুটি হচ্ছে'},
   Tr.distributeProfit:   {'en': 'Distribute Profit',   'bn': 'লভ্যাংশ বিতরণ'},
   Tr.profitShare:        {'en': 'Profit Share',        'bn': 'লভ্যাংশ'},
