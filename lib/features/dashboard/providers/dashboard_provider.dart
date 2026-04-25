@@ -50,6 +50,16 @@ final dashboardStatsProvider = FutureProvider<Map<String, dynamic>>((ref) async 
     double totalOutstanding = loansData.fold(0.0, (sum, item) => sum + ((item['outstanding_amount'] as num).toDouble()));
     int activeLoansCount = loansData.length;
 
+    // Target Progress (Samity Overall)
+    const double monthlyTarget = 500.0;
+    const int totalMonths = 60; // 5 years
+    final double overallTarget = monthlyTarget * totalMonths * membersCount;
+    
+    final startDate = DateTime(2022, 1, 1);
+    final now = DateTime.now();
+    final monthsPassed = (now.year - startDate.year) * 12 + now.month - startDate.month + 1;
+    final timeProgress = (monthsPassed / totalMonths).clamp(0.0, 1.0);
+
     return {
       'isAdmin': true,
       'total_members': membersCount,
@@ -58,6 +68,9 @@ final dashboardStatsProvider = FutureProvider<Map<String, dynamic>>((ref) async 
       'total_profit_distributed': totalProfit,
       'total_outstanding': totalOutstanding,
       'active_loans': activeLoansCount,
+      'target_progress': (totalSavings / overallTarget).clamp(0.0, 1.0),
+      'time_progress': timeProgress,
+      'total_target': overallTarget,
     };
   } else {
     // MEMBER STATS
@@ -76,6 +89,16 @@ final dashboardStatsProvider = FutureProvider<Map<String, dynamic>>((ref) async 
     double totalOutstanding = loansData.fold(0.0, (sum, item) => sum + ((item['outstanding_amount'] as num).toDouble()));
     int activeLoansCount = loansData.length;
 
+    // Target Progress (Individual)
+    const double monthlyTarget = 500.0;
+    const int totalMonths = 60;
+    const double individualTarget = monthlyTarget * totalMonths; // 30,000 BDT
+
+    final startDate = DateTime(2022, 1, 1);
+    final now = DateTime.now();
+    final monthsPassed = (now.year - startDate.year) * 12 + now.month - startDate.month + 1;
+    final timeProgress = (monthsPassed / totalMonths).clamp(0.0, 1.0);
+
     return {
       'isAdmin': false,
       'isPending': profile['status'] == 'pending',
@@ -85,6 +108,9 @@ final dashboardStatsProvider = FutureProvider<Map<String, dynamic>>((ref) async 
       'total_profit': ownProfit,
       'total_outstanding': totalOutstanding,
       'active_loans': activeLoansCount,
+      'target_progress': (totalSavings / individualTarget).clamp(0.0, 1.0),
+      'time_progress': timeProgress,
+      'individual_target': individualTarget,
     };
   }
 });

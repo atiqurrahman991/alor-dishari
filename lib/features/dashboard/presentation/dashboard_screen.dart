@@ -158,7 +158,7 @@ class DashboardScreen extends ConsumerWidget {
                             color: Colors.blueAccent,
                           ),
                         _DashboardCard(
-                          title: tr[Tr.totalInvestment], 
+                          title: 'মোট সঞ্চয় + লভ্যাংশ', 
                           value: '৳ ${stats['total_savings']}', 
                           icon: Icons.savings_rounded,
                           color: Colors.teal,
@@ -179,6 +179,9 @@ class DashboardScreen extends ConsumerWidget {
                     );
                   }
                 ),
+
+                const SizedBox(height: 24),
+                _TargetProgressCard(stats: stats),
                 
                 const SizedBox(height: 40),
                 Text(
@@ -635,3 +638,101 @@ class _PendingApprovalsSection extends ConsumerWidget {
   }
 }
 
+class _TargetProgressCard extends StatelessWidget {
+  final Map<String, dynamic> stats;
+
+  const _TargetProgressCard({required this.stats});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isAdmin = stats['isAdmin'] == true;
+    final targetProgress = stats['target_progress'] as double;
+    final timeProgress = stats['time_progress'] as double;
+    final targetAmount = isAdmin ? stats['total_target'] : stats['individual_target'];
+
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(color: theme.colorScheme.outlineVariant, width: 1),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.green.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(Icons.track_changes_rounded, color: Colors.green),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  isAdmin ? '৫ বছরের লক্ষ্যমাত্রা (পুরো সমিতি)' : '৫ বছরের লক্ষ্যমাত্রা (ব্যক্তিগত)',
+                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            
+            // Savings Progress
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('পুঁজি জমার লক্ষ্যমাত্রা'),
+                Text('${(targetProgress * 100).toStringAsFixed(1)}%', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green)),
+              ],
+            ),
+            const SizedBox(height: 8),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: LinearProgressIndicator(
+                value: targetProgress,
+                minHeight: 12,
+                backgroundColor: Colors.green.withOpacity(0.1),
+                valueColor: const AlwaysStoppedAnimation<Color>(Colors.green),
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'লক্ষ্য: ৳ $targetAmount',
+              style: theme.textTheme.bodySmall,
+            ),
+            
+            const SizedBox(height: 20),
+            
+            // Time Progress
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('সময় অতিক্রান্ত'),
+                Text('${(timeProgress * 100).toStringAsFixed(1)}%', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
+              ],
+            ),
+            const SizedBox(height: 8),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: LinearProgressIndicator(
+                value: timeProgress,
+                minHeight: 12,
+                backgroundColor: Colors.blue.withOpacity(0.1),
+                valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'মেয়াদ: জানুয়ারি ২০২২ - ডিসেম্বর ২০২৬',
+              style: theme.textTheme.bodySmall,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
