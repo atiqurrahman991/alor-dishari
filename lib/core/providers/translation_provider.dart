@@ -26,7 +26,7 @@ enum Tr {
   save, cancel, delete, edit, search, filter, refresh, loading, noData,
   success, error, confirm, yes, no, date, amount, name, submit, back, next, close, notes,
   // Settings
-  language, theme, darkMode, lightMode, switchLanguage, switchTheme, appVersion,
+  language, theme, darkMode, lightMode, switchLanguage, switchTheme, appVersion, privacyPolicy,
   // New UI Elements
   hello, administrator, quickActions, pendingApprovals, noPending, approve, 
   joined, viewLedger, issuingLoanFor, noMembersFound, depositRequested, 
@@ -118,6 +118,7 @@ const Map<Tr, Map<String, String>> _translations = {
   Tr.switchLanguage:     {'en': 'Switch to বাংলা',    'bn': 'Switch to English'},
   Tr.switchTheme:        {'en': 'Switch Theme',        'bn': 'থিম পরিবর্তন করুন'},
   Tr.appVersion:         {'en': 'App Version',         'bn': 'অ্যাপ ভার্সন'},
+  Tr.privacyPolicy:       {'en': 'Privacy Policy',      'bn': 'গোপনীয়তা নীতি'},
   Tr.hello:              {'en': 'Hello',               'bn': 'হ্যালো'},
   Tr.administrator:      {'en': 'ADMINISTRATOR',       'bn': 'অ্যাডমিনিস্ট্রেটর'},
   Tr.quickActions:       {'en': 'Quick Actions',       'bn': 'কুইক অ্যাকশন'},

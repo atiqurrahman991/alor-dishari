@@ -349,6 +349,18 @@ class DashboardScreen extends ConsumerWidget {
           ),
           const Divider(),
           ListTile(
+            leading: const Icon(Icons.privacy_tip_outlined),
+            title: Text(tr[Tr.privacyPolicy]),
+            onTap: () {
+              Navigator.pop(context); // Close drawer
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen()),
+              );
+            },
+          ),
+          const Divider(),
+          ListTile(
             leading: const Icon(Icons.logout_rounded),
             title: Text(tr[Tr.logout]),
             onTap: () => ref.read(authProvider.notifier).logout(),
