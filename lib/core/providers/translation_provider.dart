@@ -7,6 +7,7 @@ enum Tr {
   signUp, signUpButton, dontHaveAccount, alreadyHaveAccount,
   // Navigation
   dashboard, members, savings, loans, installments, reports, settings,
+  investments, returns, // Adding missing enum members
   // Dashboard
   totalMembers, totalSavings, totalInvestment, totalOutstanding, activeInvestments, monthlyCollection,
   totalLoan, activeLoans, // Restoring for compatibility
