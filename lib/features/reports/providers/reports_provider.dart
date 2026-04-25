@@ -50,3 +50,60 @@ final reportsProvider = FutureProvider<Map<String, dynamic>>((ref) async {
     'month_name': DateFormat('MMMM yyyy').format(now),
   };
 });
+
+// Provider for detailed collection analysis (Expected vs Actual)
+final collectionReportProvider = FutureProvider<Map<String, dynamic>>((ref) async {
+  final now = DateTime.now();
+  final startOfMonth = DateTime(now.year, now.month, 1).toIso8601String();
+  
+  // 1. Get all active members
+  final membersResponse = await supabase
+      .from('members')
+      .select('id, name, mobile')
+      .eq('status', 'active');
+  final members = membersResponse as List;
+  
+  // 2. Get all approved savings for this month
+  final savingsResponse = await supabase
+      .from('savings')
+      .select('member_id, deposit_amount')
+      .eq('status', 'approved')
+      .gte('created_at', startOfMonth);
+  final savings = savingsResponse as List;
+
+  // 3. Map savings to member IDs
+  Map<String, double> memberSavings = {};
+  for (var s in savings) {
+    final id = s['member_id'];
+    final amount = (s['deposit_amount'] as num).toDouble();
+    memberSavings[id] = (memberSavings[id] ?? 0.0) + amount;
+  }
+
+  // 4. Analyze who has paid and who hasn't
+  List<Map<String, dynamic>> paidMembers = [];
+  List<Map<String, dynamic>> dueMembers = [];
+  
+  const double monthlyTarget = 500.0;
+
+  for (var m in members) {
+    final id = m['id'];
+    final paid = memberSavings[id] ?? 0.0;
+    
+    if (paid >= monthlyTarget) {
+      paidMembers.add({...m, 'paid': paid});
+    } else {
+      dueMembers.add({...m, 'paid': paid, 'due': monthlyTarget - paid});
+    }
+  }
+
+  return {
+    'total_members': members.length,
+    'expected_collection': members.length * monthlyTarget,
+    'actual_collection': savings.fold<double>(0, (sum, item) => sum + (item['deposit_amount'] as num)),
+    'paid_count': paidMembers.length,
+    'due_count': dueMembers.length,
+    'due_members': dueMembers,
+    'paid_members': paidMembers,
+  };
+});
+
