@@ -116,6 +116,7 @@ class _ReportRow extends StatelessWidget {
       ),
     );
   }
+}
 
 Widget _buildCollectionAnalysis(BuildContext context, WidgetRef ref, AsyncValue<Map<String, dynamic>> collectionAsync, ThemeData theme) {
   return collectionAsync.when(
